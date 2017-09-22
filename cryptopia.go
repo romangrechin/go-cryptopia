@@ -47,3 +47,20 @@ func (b *Cryptopia) GetTradePairs() (pairs []Pair, err error) {
 	err = json.Unmarshal(response.Result, &pairs)
 	return
 }
+
+// GetTradeHistory Returns all trade history data
+func (b *Cryptopia) GetTradeHistory() (trades []Trade, err error) {
+	r, err := b.client.do("GET", "GetTradeHistory", "", true)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	err = json.Unmarshal(response.Result, &trades)
+	return
+}
