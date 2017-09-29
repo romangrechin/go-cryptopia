@@ -31,6 +31,11 @@ type Cryptopia struct {
 	client *client
 }
 
+// set enable/disable http request/response dump
+func (c *Cryptopia) SetDebug(enable bool) {
+	c.client.debug = enable
+}
+
 // GetTradePairs Returns all trade pair data
 func (b *Cryptopia) GetTradePairs() (pairs []Pair, err error) {
 	r, err := b.client.do("GET", "GetTradePairs", "", false)
