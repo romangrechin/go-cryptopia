@@ -16,7 +16,7 @@ func main() {
 	cryptopia := cryptopia.New(API_KEY, API_SECRET)
 
 	// GetTradePairs
-	pairs, _ := cryptopia.GetTradePairs()
+	pairs, _ := cryptopia.GetTradePairs(cryptopia.TradeHistoryParams{})
 	fmt.Println(len(pairs))
 
 	for i, _ := range pairs {

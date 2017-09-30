@@ -54,8 +54,12 @@ func (b *Cryptopia) GetTradePairs() (pairs []Pair, err error) {
 }
 
 // GetTradeHistory Returns all trade history data
-func (b *Cryptopia) GetTradeHistory() (trades []Trade, err error) {
-	r, err := b.client.do("GET", "GetTradeHistory", "", true)
+func (b *Cryptopia) GetTradeHistory(params TradeHistoryParams) (trades []Trade, err error) {
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return
+	}
+	r, err := b.client.do("POST", "GetTradeHistory", string(payload), true)
 	if err != nil {
 		return
 	}
