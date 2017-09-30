@@ -2,14 +2,17 @@ package cryptopia
 
 import (
 	"crypto/hmac"
-	"crypto/sha512"
-	"encoding/hex"
+	"crypto/md5"
+	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -105,15 +108,16 @@ func (c *client) do(method string, resource string, payload string, authNeeded b
 			err = errors.New("You need to set API Key and API Secret to call this method")
 			return
 		}
-		nonce := time.Now().UnixNano()
-		q := req.URL.Query()
-		q.Set("apikey", c.apiKey)
-		q.Set("nonce", fmt.Sprintf("%d", nonce))
-		req.URL.RawQuery = q.Encode()
-		mac := hmac.New(sha512.New, []byte(c.apiSecret))
-		_, err = mac.Write([]byte(req.URL.String()))
-		sig := hex.EncodeToString(mac.Sum(nil))
-		req.Header.Add("apisign", sig)
+		nonce := strconv.FormatInt(time.Now().UnixNano(), 10)
+		md5 := md5.Sum([]byte(payload))
+		signature := c.apiKey + method + strings.ToLower(url.QueryEscape(req.URL.String())) +
+			nonce + base64.StdEncoding.EncodeToString(md5[:])
+		secret, _ := base64.StdEncoding.DecodeString(c.apiSecret)
+		mac := hmac.New(sha256.New, secret)
+		_, err = mac.Write([]byte(signature))
+		sig := base64.StdEncoding.EncodeToString(mac.Sum(nil))
+		auth := "amx " + c.apiKey + ":" + sig + ":" + nonce
+		req.Header.Add("Authorization", auth)
 	}
 
 	resp, err := c.doTimeoutRequest(connectTimer, req)
