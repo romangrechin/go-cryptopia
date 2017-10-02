@@ -53,6 +53,27 @@ func (b *Cryptopia) GetTradePairs() (pairs []Pair, err error) {
 	return
 }
 
+// GetBalance Returns all balances or a specific currency balance
+func (b *Cryptopia) GetBalance(params BalanceParams) (balances []Balance, err error) {
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return
+	}
+	r, err := b.client.do("POST", "GetBalance", string(payload), true)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	err = json.Unmarshal(response.Result, &balances)
+	return
+}
+
 // GetTradeHistory Returns all trade history data
 func (b *Cryptopia) GetTradeHistory(params TradeHistoryParams) (trades []Trade, err error) {
 	payload, err := json.Marshal(params)
@@ -71,5 +92,26 @@ func (b *Cryptopia) GetTradeHistory(params TradeHistoryParams) (trades []Trade, 
 		return
 	}
 	err = json.Unmarshal(response.Result, &trades)
+	return
+}
+
+// GetTransactions Returns a list of transactions
+func (b *Cryptopia) GetTransactions(params TransactionsParams) (transactions []Transaction, err error) {
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return
+	}
+	r, err := b.client.do("POST", "GetTransactions", string(payload), true)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	err = json.Unmarshal(response.Result, &transactions)
 	return
 }
