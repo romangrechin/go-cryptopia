@@ -115,3 +115,20 @@ func (b *Cryptopia) GetTransactions(params TransactionsParams) (transactions []T
 	err = json.Unmarshal(response.Result, &transactions)
 	return
 }
+
+// GetMarkets Returns a list of markets
+func (b *Cryptopia) GetMarkets() (markets []Market, err error) {
+	r, err := b.client.do("GET", "GetMarkets", "", false)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+	err = json.Unmarshal(response.Result, &markets)
+	return
+}
