@@ -132,3 +132,91 @@ func (b *Cryptopia) GetMarkets() (markets []Market, err error) {
 	err = json.Unmarshal(response.Result, &markets)
 	return
 }
+
+// GetDepositAddress Returns specific currency deposit address
+func (b *Cryptopia) GetDepositAddress(params BalanceParams) (address DepositAddress, err error) {
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return
+	}
+	r, err := b.client.do("POST", "GetDepositAddress", string(payload), true)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response.Result, &address)
+	return
+}
+
+// GetOpenOrders Returns a list of open orders
+func (b *Cryptopia) GetOpenOrders(params TradeHistoryParams) (orders []Order, err error) {
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return
+	}
+	r, err := b.client.do("POST", "GetOpenOrders", string(payload), true)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response.Result, &orders)
+	return
+}
+
+// SubmitTrade
+func (b *Cryptopia) SubmitTrade(params SubmitTradeParams) (orders []SubmitOrder, err error) {
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return
+	}
+	r, err := b.client.do("POST", "SubmitTrade", string(payload), true)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response.Result, &orders)
+	return
+}
+
+// CancelTrade
+func (b *Cryptopia) CancelTrade(params CancelTradeParams) (orders []SubmitOrder, err error) {
+	payload, err := json.Marshal(params)
+	if err != nil {
+		return
+	}
+	r, err := b.client.do("POST", "CancelTrade", string(payload), true)
+	if err != nil {
+		return
+	}
+	var response jsonResponse
+	if err = json.Unmarshal(r, &response); err != nil {
+		return
+	}
+	if err = handleErr(response); err != nil {
+		return
+	}
+
+	err = json.Unmarshal(response.Result, &orders)
+	return
+}
